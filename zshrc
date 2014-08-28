@@ -52,11 +52,11 @@ bindkey -v
 # fi
 
 #export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-export PATH="$PATH:/opt/ec2/bin/"
+#export PATH="$PATH:/opt/ec2/bin/"
 #export JAVA_HOME=$(/usr/libexec/java_home)
-export EC2_HOME=/opt/ec2
-export AWS_ACCESS_KEY=
-export AWS_SECRET_KEY=
+#export EC2_HOME=/opt/ec2
+#export AWS_ACCESS_KEY=
+#export AWS_SECRET_KEY=
 
 
 
