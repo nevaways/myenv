@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # bring some color to my screen
 red='\033[0;31m'
@@ -60,7 +60,7 @@ curl"
 
 function teardown() {
     echo "EXECUTING TEARDOWN"
-    for p in $packages ; do echo -en "${red}killing" && echo "$p" && apt-get remove -y $p && dpkg --purge $p && dpkg --remove $p ; done
+    for p in $packages ; do echo -en "${red}killing $p" && apt-get remove -y $p && dpkg --purge $p && dpkg --remove $p ; done
 
     gem remove rmagick
     gem remove bundler
@@ -120,7 +120,6 @@ function buildup() {
         /bin/cp -v ./"sRGB Profile.icc" /System/Library/ColorSync/Profiles/
     fi
 }
-
 
 while getopts cbh opt
 do
