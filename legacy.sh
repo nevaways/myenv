@@ -60,7 +60,7 @@ curl"
 
 function teardown() {
     echo "EXECUTING TEARDOWN"
-    for p in $packages ; do echo -en "${red}killing $p" && apt-get remove -y $p && dpkg --purge $p && dpkg --remove $p ; done
+    for p in $packages ; do echo -e "${red}killing $p" && apt-get remove -y $p && dpkg --purge $p && dpkg --remove $p ; done
 
     gem remove rmagick
     gem remove bundler
