@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # bring some color to my screen
 red='\033[0;31m'
 
+#list of packages needed
 packages="
 apache2
 apache2-bin
@@ -50,16 +51,16 @@ ruby1.9.1
 ruby1.9.1-dev
 libapache2-mod-php5
 libapache2-mod-passenger
-libapache2-mod-authnz-external"
+libapache2-mod-authnz-external
+curl"
 
 #########
 #Teardown
 #########
 
-teardown() {
-    echo "executing teardown"
-    echo "killing $p"
-    for p in $package ; do echo "killing $p" && apt-get remove -y $p && dpkg --purge $p && dpkg --remove $p ; done
+function teardown() {
+    echo "EXECUTING TEARDOWN"
+    for p in $packages ; do echo -en "${red}killing" && echo "$p" && apt-get remove -y $p && dpkg --purge $p && dpkg --remove $p ; done
 
     gem remove rmagick
     gem remove bundler
@@ -73,15 +74,16 @@ teardown() {
 
     gem remove rvm
     rvm implode --force
+    /bin/rm -rf /System/Library/ColorSync/Profiles/
 }
 
 ########
 #Buildup
 ########
 
-buildup () {
+function buildup() {
 
-    echo "building up legacy"
+    echo "BUILDING UP LEGACY"
     /usr/bin/apt-get update
 
     for p in $packages ; do echo -e "${red}installing $p" && apt-get install -y $p; done ;
@@ -119,6 +121,7 @@ buildup () {
     fi
 }
 
+
 while getopts cbh opt
 do
     case "$opt" in
@@ -127,6 +130,3 @@ do
         *) echo "specify -c for clean or -b for build " ; exit 0 ;;
     esac
 done
-
-
-
