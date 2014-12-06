@@ -5,6 +5,8 @@ red='\033[0;31m'
 
 #list of packages needed
 packages="
+imagemagick
+imagemagick-common
 apache2
 apache2-bin
 apache2-data
@@ -13,6 +15,8 @@ libapache2-mod-authnz-external
 libapache2-mod-passenger
 libapache2-mod-php5
 libmagickcore5-extra
+libmagickcore-dev
+libmagickwand-dev
 php5
 php5-common
 php5-ldap
@@ -23,6 +27,7 @@ php5-curl
 php5-gd
 php5-imagick
 php5-json
+lynx
 php5-ldap
 php5-mysql
 php5-readline
@@ -33,8 +38,6 @@ ruby-rmagick
 libxslt1-dev
 libxslt1-dbg
 libxml-libxslt-perl
-libmagickcore-dev
-libmagickwand-dev
 graphicsmagick-libmagick-dev-compat
 libgraphicsmagick++1-dev
 libaugeas-ruby
@@ -88,6 +91,7 @@ function buildup() {
 
     for p in $packages ; do echo -e "${red}installing $p" && apt-get install -y $p; done ;
 
+    curl -sSL https://rvm.io/mpapis.asc | gpg --import -
     curl -sSL https://get.rvm.io | bash -s stable --ruby
     rvm install ruby-1.9.3-p551
     rvm alias create default ruby-1.9.3-p551
@@ -115,10 +119,22 @@ function buildup() {
         echo "export PATH=\"$PATH:/usr/local/rvm/bin:\$HOME/.rvm/scripts/rvm\"" >> ~jenkins/.bashrc
     fi
 
-    if [ !-d /System/Library/ColorSync/Profiles/  ]; then
+    # setup files and stuff
+
+    if [ ! -d /System/Library/ColorSync/Profiles/  ]; then
         /bin/mkdir -p /System/Library/ColorSync/Profiles
         /bin/cp -v ./"sRGB Profile.icc" /System/Library/ColorSync/Profiles/
     fi
+
+    if [ ! -d /etc/apache2/ssl/ ]; then
+        /bin/mkdir -p /etc/apache2/ssl
+        cp -v ./apache2.crt /etc/apache2/ssl/
+        cp -v ./apache2.key /etc/apache2/ssl/
+    fi
+
+    # enable ssl
+    /usr/sbin/a2enmod ssl authnz_ldap ldap
+    /usr/sbin/a2ensite default-ssl.conf
 }
 
 while getopts cbh opt
