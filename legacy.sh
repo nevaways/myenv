@@ -5,6 +5,8 @@ red='\033[0;31m'
 
 #list of packages needed
 packages="
+nodejs
+libcurl4-gnutls-dev
 imagemagick
 imagemagick-common
 apache2
@@ -34,6 +36,7 @@ php5-readline
 php5-ssh2
 php5-xsl
 php5-ssh2
+mysql-client
 ruby-rmagick
 libxslt1-dev
 libxslt1-dbg
@@ -73,6 +76,7 @@ function teardown() {
     gem remove json
     gem remove rake
     gem remove rdoc
+    gem remove rails
     gem remove rubygems-bundler
 
     gem remove rvm
@@ -96,6 +100,7 @@ function buildup() {
     rvm install ruby-1.9.3-p551
     rvm alias create default ruby-1.9.3-p551
     rvm use ruby-1.9.3-p551
+    gem install therubyracer
     gem install rmagick -v '2.13.2'
     gem install bundler
     gem install bundler-unload
@@ -104,12 +109,14 @@ function buildup() {
     gem install json
     gem install rake
     gem install rdoc
+    gem install rdoc
     gem install rubygems-bundler
 
     if [ -a /usr/lib/php5/20121212/imagick.so ]; then
         /usr/sbin/php5enmod imagick
     else
-       /us/bin/apt-get install php5-imagick && /usr/sbin/php5enmod imagick
+       /usr/bin/apt-get install php5-imagick && /usr/sbin/php5enmod imagick
+       /usr/sbin/php5enmod imagick
     fi
 
     if  grep -Fxq rvm /home/jenkins/.bashrc ; then
@@ -121,6 +128,10 @@ function buildup() {
 
     # setup files and stuff
 
+    if [ ! -d /var/www/html/include_errors/shared/log ]; then
+        /bin/mkdir -p /var/www/html/include_errors/shared/log
+    fi
+
     if [ ! -d /System/Library/ColorSync/Profiles/  ]; then
         /bin/mkdir -p /System/Library/ColorSync/Profiles
         /bin/cp -v ./"sRGB Profile.icc" /System/Library/ColorSync/Profiles/
@@ -128,13 +139,18 @@ function buildup() {
 
     if [ ! -d /etc/apache2/ssl/ ]; then
         /bin/mkdir -p /etc/apache2/ssl
-        cp -v ./apache2.crt /etc/apache2/ssl/
-        cp -v ./apache2.key /etc/apache2/ssl/
+        /bin/cp -v ./apache2.crt /etc/apache2/ssl/
+        /bin/cp -v ./apache2.key /etc/apache2/ssl/
     fi
+
+    /bin/cp -v ./apache2.conf       /etc/apache2/apache2.conf
+    /bin/cp -v ./defualt-ssl.conf   /etc/apache2/sites-enabled/
+    /bin/cp -v ./legacy.conf        /etc/apache2/sites-enabled/
+    /bin/cp -v ./itunessplash.conf  /etc/apache2/sites-enabled/
 
     # enable ssl
     /usr/sbin/a2enmod ssl authnz_ldap ldap
-    /usr/sbin/a2ensite default-ssl.conf
+    /usr/sbin/a2ensite default-ssl legacy itunessplash
 }
 
 while getopts cbh opt
