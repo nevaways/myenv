@@ -95,8 +95,8 @@ function buildup() {
 
     for p in $packages ; do echo -e "${red}installing $p" && apt-get install -y $p; done ;
 
-    curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-    curl -sSL https://get.rvm.io | bash -s stable --ruby
+    /usr/bin/curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+    /usr/bin/curl -sSL https://get.rvm.io | bash -s stable --ruby
     rvm install ruby-1.9.3-p551
     rvm alias create default ruby-1.9.3-p551
     rvm use ruby-1.9.3-p551
@@ -108,7 +108,6 @@ function buildup() {
     gem install io-console
     gem install json
     gem install rake
-    gem install rdoc
     gem install rdoc
     gem install rubygems-bundler
 
@@ -147,6 +146,8 @@ function buildup() {
     /bin/cp -v ./defualt-ssl.conf   /etc/apache2/sites-enabled/
     /bin/cp -v ./legacy.conf        /etc/apache2/sites-enabled/
     /bin/cp -v ./itunessplash.conf  /etc/apache2/sites-enabled/
+    /bin/mkdir -p /var/www/html/itunessplash/shared/log
+    /bin/chown -R jenkins:jenkins /var/www/html/itunessplash/shared/log
 
     # enable ssl
     /usr/sbin/a2enmod ssl authnz_ldap ldap
